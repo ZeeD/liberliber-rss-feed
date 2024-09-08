@@ -1,34 +1,32 @@
 from contextlib import contextmanager
-from datetime import datetime
 from sqlite3 import PARSE_DECLTYPES
 from sqlite3 import Connection
 from sqlite3 import connect
-from sqlite3 import register_adapter
 from sqlite3 import register_converter
 from typing import TYPE_CHECKING
+from typing import NamedTuple
 
 from .dt import from_timestamp
-from .dt import get_now
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from datetime import datetime
 
     from .config import Config
 
-register_adapter(datetime, lambda dt: dt.timestamp())
-register_converter('timestamp', lambda ts: from_timestamp(float(ts)))
+register_converter('timestamp', from_timestamp)
 
 
 def create_schema(connection: Connection) -> None:
     cursor = connection.cursor()
     cursor.execute(
         """
-            create table if not exists moods(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                artist TEXT,
+            create table if not exists rss_items(
+                guid TEXT primary key,
                 title TEXT,
-                youtube_url TEXT,
-                creation_date timestamp,
+                link TEXT,
+                description TEXT,
+                creation_date timestamp default current_timestamp,
                 published_date timestamp
             )
             """
@@ -39,34 +37,53 @@ def create_schema(connection: Connection) -> None:
 class RowNotFoundError(Exception): ...
 
 
+class RssItem(NamedTuple):
+    guid: str
+    title: str
+    link: str
+    description: str
+
+
+class FullRssItem(NamedTuple):
+    guid: str
+    title: str
+    link: str
+    description: str
+    creation_date: 'datetime'
+    published_date: 'datetime'
+
+
 class Db:
     def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def append(
-        self,
-        artist: str,
-        title: str,
-        youtube_url: str,
-        now: datetime | None = None,
-    ) -> int | None:
+    def upsert(self, rss_item: RssItem) -> int | None:
         cursor = self.connection.cursor()
         cursor.execute(
             """
-            insert into moods(artist, title, youtube_url, creation_date)
+            insert into rss_items(guid, title, link, description)
             values (?,?,?,?)
+            on conflict(guid) do update set title=?, link=?, description=?
             """,
-            (artist, title, youtube_url, get_now(now)),
+            (
+                rss_item.guid,
+                rss_item.title,
+                rss_item.link,
+                rss_item.description,
+                rss_item.title,
+                rss_item.link,
+                rss_item.description,
+            ),
         )
         self.connection.commit()
         return cursor.lastrowid
 
-    def new_row(self) -> tuple[int, str, str, str]:
+    def select_first_unpublished(self) -> RssItem:
         cursor = self.connection.cursor()
         cursor.execute(
             """
-            select id, artist, title, youtube_url
-            from moods
+            select guid, title, link, description
+            from rss_items
             where published_date is null
             order by creation_date
             """
@@ -74,43 +91,41 @@ class Db:
         row = cursor.fetchone()
         if row is None:
             raise RowNotFoundError
-        (id_, artist, title, youtube_url) = row
-        return (id_, artist, title, youtube_url)
+        return RssItem(*row)
 
-    def mark_row(self, id_: int, now: datetime | None = None) -> None:
+    def update_publish(self, guid: str) -> None:
         cursor = self.connection.cursor()
         cursor.execute(
             """
-            update moods set published_date=?
-            where id=?
+            update rss_items set published_date=current_timestamp
+            where guid=?
             """,
-            (get_now(now), id_),
+            (guid,),
         )
         self.connection.commit()
 
-    def all_rows(
-        self,
-    ) -> 'Iterator[tuple[int, str, str, str, datetime, datetime]]':
+    def update_unpublish(self, guid: str) -> None:
         cursor = self.connection.cursor()
         cursor.execute(
             """
-            select id, artist, title, youtube_url, creation_date, published_date
-            from moods
+            update rss_items set published_date=null
+            where guid=?
+            """,
+            (guid,),
+        )
+        self.connection.commit()
+
+    def full_rss_items(self) -> 'Iterator[FullRssItem]':
+        cursor = self.connection.cursor()
+        cursor.execute(
+            """
+            select guid, title, link, description, creation_date, published_date
+            from rss_items
             order by creation_date
             """
         )
         for row in cursor.fetchall():
-            (id_, artist, title, youtube_url, creation_date, published_date) = (
-                row
-            )
-            yield (
-                id_,
-                artist,
-                title,
-                youtube_url,
-                creation_date,
-                published_date,
-            )
+            yield FullRssItem(*row)
 
 
 @contextmanager

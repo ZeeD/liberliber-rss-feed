@@ -1,6 +1,7 @@
 /.coverage
 /.dmypy.json
 /.git/
+/liberliber-rss-feed.sqlite
 /.mypy_cache/
 /pdm.lock
 /.pdm-python

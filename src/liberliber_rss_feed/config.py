@@ -6,12 +6,17 @@ from dotenv import dotenv_values
 
 
 class Config(TypedDict):
+    # mastodon
     client_id: str
     client_secret: str
     access_token: str
     api_base_url: str
-    server_origin: str
+
+    # db
     sqlfn: str
+
+    # liberliber
+    rss_feed_url: str
 
 
 def defined(value: str | None) -> str:
@@ -32,6 +37,6 @@ def get_config(dotenv_path: Path = DOTENV_PATH) -> Config:
         client_secret=defined(config['client_secret']),
         access_token=defined(config['access_token']),
         api_base_url=defined(config['api_base_url']),
-        server_origin=defined(config['server_origin']),
         sqlfn=defined(config['sqlfn']),
+        rss_feed_url=defined(config['rss_feed_url']),
     )

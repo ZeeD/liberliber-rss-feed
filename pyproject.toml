@@ -14,6 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
+    "defusedxml>=0.7.1",
     "mastodon-py>=1.8.1",
     "python-dotenv>=1.0.1",
 ]
@@ -27,6 +28,8 @@ dev = [
     "mypy>=1.11.2",
     "pyproject-fmt>=2.2.3",
     "coverage>=7.6.1",
+    "setuptools>=74.1.2",
+    "types-defusedxml>=0.7.0.20240218",
 ]
 
 [tool.pdm.scripts]
@@ -37,6 +40,7 @@ lint = { composite = [
     "ruff check --exit-zero {args:.}",
     "dmypy run {args:.}",
 ] }
+start = 'src/__main__.py'
 tests = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory {args:tests}",
     "coverage report",
@@ -78,13 +82,17 @@ indent = 4
 [tool.coverage.run]
 branch = true
 source = [ "src", "tests" ]
-
+omit = [ "src/__main__.py" ]
 [tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "def main() -> None:",
+]
 show_missing = true
 sort = "Cover"
 skip_empty = true
 
 [tool.mypy]
-mypy_path = [ "src", "tests" ]
+mypy_path = [ "src", "tests", "stubs" ]
 strict = true
 warn_unused_configs = true

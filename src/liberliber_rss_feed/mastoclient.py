@@ -20,4 +20,4 @@ def publish(config: 'Config', msg: str) -> None:
         access_token=access_token,
         api_base_url=api_base_url,
     )
-    client.toot(msg)
+    client.status_post(msg, spoiler_text='🤖')

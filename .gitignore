@@ -2,6 +2,7 @@
 /.dmypy.json
 /.git/
 /liberliber-rss-feed.env
+/liberliber-rss-feed.sqlite
 /.mypy_cache/
 /.pdm-python
 **/__pycache__/

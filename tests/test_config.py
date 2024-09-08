@@ -15,7 +15,4 @@ class TestConfig(TestCase):
         self.assertEqual(
             'http://api-base-url.example.com', config['api_base_url']
         )
-        self.assertEqual(
-            'http://server-origin.example.com', config['server_origin']
-        )
         self.assertEqual('file:sqlfn?mode=memory', config['sqlfn'])

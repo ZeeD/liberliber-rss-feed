@@ -34,7 +34,7 @@ class TestCron(TestCase):
         with self.assertRaises(StepError):
             Cron(action, args, kwargs).run_forever(
                 replace_kwargs={},  # schedule following steps to "now"
-                timedelta_kwargs={'milliseconds': 1.0},
+                timedelta_kwargs={'milliseconds': 100.0},
             )
         self.assertEqual(
             action.invocations, [(args, kwargs), (args, kwargs), (args, kwargs)]

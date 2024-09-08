@@ -1,4 +1,6 @@
 from concurrent.futures.thread import ThreadPoolExecutor
+from http.server import ThreadingHTTPServer
+from typing import cast
 from unittest import TestCase
 from urllib.request import urlopen
 
@@ -8,18 +10,12 @@ from liberliber_rss_feed.web import serve_webui
 
 
 class TestWeb(TestCase):
-    maxDiff = None
-
     def test_serve_webui(self) -> None:
-        with (
-            db_connection(c(sqlfn=':memory:')) as db,
-            ThreadPoolExecutor() as executor
-        ):
-            executor.submit(serve_webui, db)
-            response = urlopen('http://localhost:8000')
-            self.assertIsNotNone(serve_webui.httpd)
-            if serve_webui.httpd is not None:
-                serve_webui.httpd.shutdown()
+        with ThreadPoolExecutor() as executor:
+            with db_connection(c(sqlfn=':memory:')) as db:
+                executor.submit(serve_webui, db)
+                response = urlopen('http://localhost:8000')
+            cast(ThreadingHTTPServer, serve_webui.httpd).shutdown()
         self.assertEqual(
             """<!DOCTYPE html>
 <html>
@@ -32,10 +28,10 @@ class TestWeb(TestCase):
         <table>
             <thead>
                 <tr>
-                    <th>id</th>
-                    <th>artist</th>
+                    <th>guid</th>
                     <th>title</th>
-                    <th>youtube_url</th>
+                    <th>link</th>
+                    <th>description</th>
                     <th>creation_date</th>
                     <th>published_date</th>
                 </tr>
