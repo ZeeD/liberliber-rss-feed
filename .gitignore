@@ -1,0 +1,9 @@
+/.coverage
+/.dmypy.json
+/.git/
+/liberliber-rss-feed.env
+/.mypy_cache/
+/.pdm-python
+**/__pycache__/
+/.ruff_cache/
+/.venv/
