@@ -20,4 +20,4 @@ def publish(config: 'Config', msg: str) -> None:
         access_token=access_token,
         api_base_url=api_base_url,
     )
-    client.status_post(msg, spoiler_text='🤖')
+    client.status_post(msg, spoiler_text='🤖\n(fonte: liberliber rss)\n')
