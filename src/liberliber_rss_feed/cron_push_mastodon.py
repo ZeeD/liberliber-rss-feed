@@ -24,8 +24,8 @@ def _cron_push_mastodon_step(db: Db, config: 'Config') -> None:
 
 
 def cron_push_mastodon(db: Db, config: 'Config') -> None:
-    replace_kwargs={'hour': 20, 'minute': 0, 'second': 0, 'microsecond': 0}
-    timedelta_kwargs={'days': 1}
+    replace_kwargs = {'hour': 20, 'minute': 0, 'second': 0, 'microsecond': 0}
+    timedelta_kwargs = {'days': 1}
     cron = Cron(_cron_push_mastodon_step, (db, config))
     cron.run_forever(
         replace_kwargs=replace_kwargs, timedelta_kwargs=timedelta_kwargs
