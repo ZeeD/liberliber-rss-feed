@@ -6,7 +6,7 @@ from time import time
 from typing import TYPE_CHECKING
 from typing import Any
 
-from .dt import TZ
+from liberliber_rss_feed.dt import TZ
 
 if TYPE_CHECKING:
     from collections.abc import Callable

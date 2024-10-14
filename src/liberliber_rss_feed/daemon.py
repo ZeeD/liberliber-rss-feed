@@ -1,13 +1,13 @@
 from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING
 
-from .cron_pull_rss_feed import cron_pull_rss_feed
-from .cron_push_mastodon import cron_push_mastodon
-from .web import serve_webui
+from liberliber_rss_feed.cron_pull_rss_feed import cron_pull_rss_feed
+from liberliber_rss_feed.cron_push_mastodon import cron_push_mastodon
+from liberliber_rss_feed.web import serve_webui
 
 if TYPE_CHECKING:
-    from .config import Config
-    from .db import Db
+    from liberliber_rss_feed.config import Config
+    from liberliber_rss_feed.db import Db
 
 
 def start_daemon(db: 'Db', config: 'Config') -> None:

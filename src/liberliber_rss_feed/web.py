@@ -8,9 +8,8 @@ from webbrowser import open
 if TYPE_CHECKING:
     from io import BufferedIOBase
 
+    from liberliber_rss_feed.db import Db
     from liberliber_rss_feed.db import FullRssItem
-
-    from .db import Db
 
 HTML = """<!DOCTYPE html>
 <html>

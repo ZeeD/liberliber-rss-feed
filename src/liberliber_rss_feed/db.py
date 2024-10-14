@@ -6,13 +6,13 @@ from sqlite3 import register_converter
 from typing import TYPE_CHECKING
 from typing import NamedTuple
 
-from .dt import from_timestamp
+from liberliber_rss_feed.dt import from_timestamp
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from datetime import datetime
 
-    from .config import Config
+    from liberliber_rss_feed.config import Config
 
 register_converter('timestamp', from_timestamp)
 

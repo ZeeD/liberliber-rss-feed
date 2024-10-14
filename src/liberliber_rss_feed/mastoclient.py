@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from mastodon import Mastodon
 
 if TYPE_CHECKING:
-    from .config import Config
+    from liberliber_rss_feed.config import Config
 
 
 def publish(config: 'Config', msg: str) -> None:

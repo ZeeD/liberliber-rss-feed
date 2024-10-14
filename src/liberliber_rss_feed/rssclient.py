@@ -3,10 +3,10 @@ from urllib.request import urlopen
 
 from defusedxml.ElementTree import fromstring
 
-from .db import RssItem
+from liberliber_rss_feed.db import RssItem
 
 if TYPE_CHECKING:
-    from .config import Config
+    from liberliber_rss_feed.config import Config
 
 
 def fetch(config: 'Config') -> list[RssItem]:

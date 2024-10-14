@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
-from .cron import Cron
-from .rssclient import fetch
+from liberliber_rss_feed.cron import Cron
+from liberliber_rss_feed.rssclient import fetch
 
 if TYPE_CHECKING:
-    from .config import Config
-    from .db import Db
+    from liberliber_rss_feed.config import Config
+    from liberliber_rss_feed.db import Db
 
 
 def _cron_pull_rss_feed_step(db: 'Db', config: 'Config') -> None:
