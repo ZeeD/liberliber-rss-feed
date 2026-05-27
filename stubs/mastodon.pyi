@@ -13,12 +13,12 @@ class Mastodon:
         api_base_url: str,
     ) -> None: ...
     def toot(self, status: str) -> dict[str, object]: ...
-    def status_post(  # noqa: PLR0913
+    def status_post(
         self,
         status: str,
         in_reply_to_id: str | None = None,
         media_ids: list[str] | None = None,
-        sensitive: bool = False,  # noqa: FBT001, FBT002
+        sensitive: bool = False,
         visibility: Literal['direct', 'private', 'unlisted', 'public']
         | None = None,
         spoiler_text: str | None = None,

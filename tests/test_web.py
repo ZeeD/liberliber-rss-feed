@@ -15,7 +15,7 @@ class TestWeb(TestCase):
             with db_connection(c(sqlfn=':memory:')) as db:
                 executor.submit(serve_webui, db)
                 response = urlopen('http://localhost:8000')
-            cast(ThreadingHTTPServer, serve_webui.httpd).shutdown()
+            cast('ThreadingHTTPServer', serve_webui.httpd).shutdown()
         self.assertEqual(
             """<!DOCTYPE html>
 <html>

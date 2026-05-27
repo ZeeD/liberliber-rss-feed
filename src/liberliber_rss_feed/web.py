@@ -63,7 +63,7 @@ def request_handler(db: 'Db') -> type[BaseHTTPRequestHandler]:
     class RequestHandler(BaseHTTPRequestHandler):
         db: ClassVar['Db']
 
-        def do_GET(self) -> None:  # noqa: N802
+        def do_GET(self) -> None:
             self.log_message('GET')
             self.log_request(200)
             self.send_response(200)

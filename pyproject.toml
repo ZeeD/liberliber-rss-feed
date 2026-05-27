@@ -1,17 +1,22 @@
+[build-system]
+build-backend = "pdm.backend"
+requires = [ "pdm-backend" ]
+
 [project]
 name = "liberliber-rss-feed"
 version = "0.1.0"
 description = "LiberLiber rss feed"
 readme = "README.md"
-license = { text = "AGPL-3.0-or-later" }
-
+license = { file = "LICENSE", text = "AGPL-3.0-or-later" }
 authors = [
-    { name = "Vito De Tullio", email = "vito.detullio@gmail.com" },
+    { name = "ZeeD", email = "vito.detullio@gmail.com" },
 ]
-requires-python = "==3.12.*"
+requires-python = ">=3.12,<3.15"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "defusedxml>=0.7.1",
@@ -19,10 +24,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
 ]
 
-[tool.pdm]
-distribution = false
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "ruff>=0.6.4",
     "mypy>=1.11.2",
@@ -32,16 +34,17 @@ dev = [
     "types-defusedxml>=0.7.0.20240218",
 ]
 
-[tool.pdm.scripts]
-_.env = { PYTHONPATH = "src:tests" }
-lint = { composite = [
+[tool.pdm]
+distribution = false
+scripts._.env = { PYTHONPATH = "src:tests" }
+scripts.lint = { composite = [
     "pyproject-fmt pyproject.toml",
     "ruff format {args:.}",
-    "ruff check --exit-zero {args:.}",
-    "dmypy run {args:.}",
-] }
-start = 'src/__main__.py'
-tests = { composite = [
+    "ruff check {args:.}",
+    "mypy {args:.}",
+], keep_going = true }
+scripts.start = "src/__main__.py"
+scripts.test = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory {args:tests}",
     "coverage report",
     "coverage erase",
@@ -50,7 +53,6 @@ tests = { composite = [
 [tool.ruff]
 line-length = 80
 src = [ "src", "tests" ]
-
 fix = true
 format.quote-style = "single"
 format.skip-magic-trailing-comma = true
@@ -79,20 +81,19 @@ lint.isort.force-single-line = true
 column_width = 80
 indent = 4
 
-[tool.coverage.run]
-branch = true
-source = [ "src", "tests" ]
-omit = [ "src/__main__.py" ]
-[tool.coverage.report]
-exclude_also = [
-    "if TYPE_CHECKING:",
-    "def main() -> None:",
-]
-show_missing = true
-sort = "Cover"
-skip_empty = true
-
 [tool.mypy]
 mypy_path = [ "src", "tests", "stubs" ]
 strict = true
 warn_unused_configs = true
+
+[tool.coverage]
+run.branch = true
+run.omit = [ "src/__main__.py" ]
+run.source = [ "src", "tests" ]
+report.exclude_also = [
+    "def main() -> None:",
+    "if TYPE_CHECKING:",
+]
+report.show_missing = true
+report.skip_empty = true
+report.sort = "Cover"
